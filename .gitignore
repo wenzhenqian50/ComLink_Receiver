@@ -1,0 +1,11 @@
+# ESP-IDF 编译生成的临时文件
+build/
+
+# 依赖管理工具生成的文件
+dependencies.lock
+managed_components/
+
+# 编译器/编辑器产生的缓存
+.clangd/
+.vscode/
+.devcontainer/
