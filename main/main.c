@@ -13,6 +13,7 @@ static const char *TAG = "RECEIVER";
 
 static uint8_t locked_mac[6] = {0}; // 手柄 MAC
 static bool is_p2p_locked = false;  // 是否已锁定
+static uint8_t print_counter = 0;   // 打印计数器
 
 static void send_feedback_to_controller() {
     if (!is_p2p_locked) return; // 没绑定手柄就不发
@@ -49,7 +50,10 @@ static void on_data_recv(const esp_now_recv_info_t *recv_info, const uint8_t *da
     switch (pkt->pkt_type) {
         case NOW_PKT_BROADCAST:
             // 处理广播数据
-            ESP_LOGI(TAG, "[BROADCAST] From: " MACSTR " | Joy_X:%d, Joy_Y:%d, Pitch:%d, Roll:%d, Yaw:%d, Buttons:0x%X\n", MAC2STR(src_mac), pkt->payload.controller.joy_x, pkt->payload.controller.joy_y, pkt->payload.controller.pitch, pkt->payload.controller.roll, pkt->payload.controller.yaw, pkt->payload.controller.buttons);
+            if (++print_counter >= 5) {
+                ESP_LOGI(TAG, "[BROADCAST] From: " MACSTR " | Joy_X:%d, Joy_Y:%d, Pitch:%d, Roll:%d, Yaw:%d, Buttons:0x%X\n", MAC2STR(src_mac), pkt->payload.controller.joy_x, pkt->payload.controller.joy_y, pkt->payload.controller.pitch, pkt->payload.controller.roll, pkt->payload.controller.yaw, pkt->payload.controller.buttons);
+                print_counter = 0;
+            }
             break;
         case NOW_PKT_PAIR_REQ:
             // 处理配对请求
@@ -79,8 +83,11 @@ static void on_data_recv(const esp_now_recv_info_t *recv_info, const uint8_t *da
         case NOW_PKT_P2P_DATA:
             // 处理私有点对点数据
             if (is_p2p_locked && memcmp(src_mac, locked_mac, 6) == 0) {
-                ESP_LOGI(TAG, "Joy_X:%d, Joy_Y:%d, Pitch:%d, Roll:%d, Yaw:%d, Buttons:0x%X\n", 
-                         pkt->payload.controller.joy_x, pkt->payload.controller.joy_y, pkt->payload.controller.pitch, pkt->payload.controller.roll, pkt->payload.controller.yaw, pkt->payload.controller.buttons);
+                if (++print_counter >= 5) {
+                    ESP_LOGI(TAG, "Joy_X:%d, Joy_Y:%d, Pitch:%d, Roll:%d, Yaw:%d, Buttons:0x%X\n", 
+                             pkt->payload.controller.joy_x, pkt->payload.controller.joy_y, pkt->payload.controller.pitch, pkt->payload.controller.roll, pkt->payload.controller.yaw, pkt->payload.controller.buttons);
+                    print_counter = 0;
+                }
             }
             break;
         default:
