@@ -35,7 +35,7 @@ typedef struct __attribute__((packed)) {
 
 // 包结构
 typedef struct __attribute__((packed)) {
-    uint8_t pkt_type;            // 包类型
+    uint8_t pkt_type;                   // 包类型
     union {
         controller_packet_t controller; // 手柄发给接收端
         feedback_packet_t feedback;     // 接收端发给手柄

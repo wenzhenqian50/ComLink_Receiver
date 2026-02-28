@@ -9,17 +9,17 @@
 #include "esp_log.h"
 #include "protocol.h"
 
-static const char *TAG = "RECEIVER";
+static const char *TAG = "MAIN";
 
 static uint8_t locked_mac[6] = {0}; // 手柄 MAC
 static bool is_p2p_locked = false;  // 是否已锁定
-static uint8_t print_counter = 0;   // 打印计数器
+static uint8_t print_counter = 0;   // 打印计数器: 降低打印频率
 
 static void send_feedback_to_controller() {
     if (!is_p2p_locked) return; // 没绑定手柄就不发
 
     comlink_now_pkt_t tx_pkt;
-    uint8_t intensity = 10; // 0-15 级
+    uint8_t intensity = 10;  // 0-15 级
     uint8_t duration = 4;    // 0-15 级
     tx_pkt.pkt_type = NOW_PKT_FEEDBACK;
     tx_pkt.payload.feedback.battery_level = 85;
