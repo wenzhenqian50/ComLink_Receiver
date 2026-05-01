@@ -1,3 +1,3 @@
 idf_component_register(SRCS "main.c"
-                       PRIV_REQUIRES spi_flash esp_wifi nvs_flash
+                       PRIV_REQUIRES nvs_flash comlink_crsf comlink_now_receiver
                        INCLUDE_DIRS "")
